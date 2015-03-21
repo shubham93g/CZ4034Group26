@@ -8,11 +8,12 @@
 
 from Tkinter import *
 import JsonCrawler as Js
+import JsonCrawlerWithSQL as Js1
 
 root = Tk()
 
 def search():
-    Js.crawlInstagram(str(E1.get()),int(E2.get()))
+    Js1.crawlInstagram(str(E1.get()),int(E2.get()))
 
 L1 = Label(root, text="Tag Name")
 L1.grid(row=1, column=1) 

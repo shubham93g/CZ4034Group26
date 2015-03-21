@@ -97,6 +97,8 @@ def crawlInstagram(tag,count):
         result = getJsonResults(url)
         fileToWrite = open(tag+str(counter/20+1)+'.txt','w')
         json.dump(result, fileToWrite)
+        for item in result["data"]:
+            print(item['type'])
         fileToWrite.close()
         counter = counter + 20
         url = result['pagination']['next_url']
