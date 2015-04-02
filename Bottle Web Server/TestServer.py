@@ -8,15 +8,19 @@ def hello():
 
 @route('/')
 def home():
-    conn = urlopen('http://localhost:7574/solr/gettingstarted_shard1_replica1/select?q=food&wt=json')
-    rsp = eval( conn.read() )
-
-    print "number of matches=", rsp['response']['numFound']
-
-    #print out the name field for each returned document
-    for doc in rsp['response']['docs']:
-        print 'matched data =', doc['CaptionText']
+    rsp = None
+    try:
+        conn = urlopen('http://localhost:7574/solr/gettingstarted_shard1_replica1/select?q=food&wt=json')
+        rsp = eval( conn.read() )
         
+        print "number of matches=", rsp['response']['numFound']
+
+        #print out the name field for each returned document
+        for doc in rsp['response']['docs']:
+            print 'matched data =', doc['CaptionText']
+    except:
+        print 'Error in connection to solr'
+    
     return template('''
 <!DOCTYPE html>
 <html lang="en">
@@ -87,7 +91,12 @@ def home():
 	<p>a</p>
 
         % for doc in rsp['response']['docs']:
-        % include('imageRow.tpl',username=doc['CaptionText'][0])
+            % if doc['Type'] == 'image':
+                % include('imageRow.tpl',username= doc['Username'],profile_picture=doc['ProfilePicture'],image=doc['ImageStdRes'],like_count=doc['LikesCount'],text_caption=doc['CaptionText'],comments=doc['Comments'].split('~|'))
+            % end
+            % else:
+                % include('videoRow.tpl',username= doc['Username'],profile_picture=doc['ProfilePicture'],video=doc['VideoStdRes'],like_count=doc['LikesCount'],text_caption=doc['CaptionText'],comments=doc['Comments'].split('~|'))
+            % end
         % end
    
         

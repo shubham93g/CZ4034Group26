@@ -3,26 +3,26 @@
 <div class="row">
 		<div class="col-sm-4" align="right">
 			{{username}}
-			<img src="./Google.jpg" width ="40" height="40"/>
+			<img src="{{profile_picture}}" width ="40" height="40"/>
 		</div>
 		<div class="col-sm-4">
 			<div class="thumbnail">
-				<img src="./Google.jpg" class="img-rounded centre-block"/>
+				<img src="{{image}}" class="img-rounded centre-block"/>
 			</div>
 			<div class="caption">
 				<p>
 				<button type="button" class="btn btn-default" aria-label="Left Align">
 					<span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
-					400
+					{{like_count}}
 				</button>
-				The caption will be here #GoogleImages
+				{{text_caption}}
 				</p>
 			
 				<p>
 					<ul class="list-group">
-						<li class="list-group-item"><img src="./Google.jpg" width="20" height="10"> </li>
-						<li class="list-group-item">Comment 2</li>
-						<li class="list-group-item">Comment 3</li>
+						% for comment in comments:
+						<li class="list-group-item">{{comment}}</li>
+						% end
 					</ul>
 				</p>
 			</div>
