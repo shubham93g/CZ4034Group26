@@ -8,6 +8,15 @@ def hello():
 
 @route('/')
 def home():
+    '''Query fomats:
+        select?q=*:*&fq=FullName:*shi*&wt=json ---> matches any string containing 'shi'
+        select?q=*:*&fq=FullName:Ashima&wt=json ---> exactly matches Ashima
+        select?q=*:*&fq=LikesCount:[10 *]&wt=json ---> returns docs with 10 or more likes
+        select?q=*:*&fq=LikesCount:[10 *]&wt=json&fl=LikesUser,FullName ---> response contains on LikesUser and FullName fields
+        select?q=*:*&fq=LikesCount:[* 10]&wt=json ---> returns docs with 10 or less likes
+        select?q=*:*&fq=LikesCount:[5 *]&fq=LikesCount:[* 10]&wt=json ---> returns docs with more than 5 and less than 10 likes'''
+        
+    
     rsp = None
     try:
         conn = urlopen('http://localhost:7574/solr/gettingstarted_shard1_replica1/select?q=swami89&wt=json')
