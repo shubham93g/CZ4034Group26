@@ -93,17 +93,32 @@ def crawlInstagram(tag,count):
     url = 'https://api.instagram.com/v1/tags/' + str(tag) + '/media/recent?client_id=2635546e823342c7a76f083db94a8555'
     #Connect to  sql database
     try:
-	db = MySQLdb.connect(charset='utf8',host="localhost", user="root",passwd="admin", db="Instagram") 
+	db = MySQLdb.connect(charset='utf8',host="localhost", user="root",passwd="admin") 
     except Exception as e:
 	print e
+  
 # you must create a Cursor object
-    cur = db.cursor() 
+    cur = db.cursor()
+    print '\nCreating database...'
+    try:
+        cur.execute('CREATE DATABASE IF NOT EXISTS instagram')
+        print 'Database created'
+    except Warning as warn:
+         print 'Warning: %s ' %warn
+
+    queryCreateTable="CREATE TABLE IF NOT EXISTS instagram.travelcrawleddata(Id INT PRIMARY KEY AUTO_INCREMENT, tag VARCHAR(255), LikesCount INT, LikesUser VARCHAR(255), \
+	    CommentsCount INT, Comments TEXT, Link VARCHAR(255), Longitude VARCHAR(255), Latitude VARCHAR(255), CaptionText TEXT, CreatedTime VARCHAR(10), \
+	    Username VARCHAR(255), ProfilePicture VARCHAR(255), FullName VARCHAR(255), Type VARCHAR(10), ImageLowRes VARCHAR(255), ImageStdRes VARCHAR(255),\
+	    ImageThumbnail VARCHAR(255), VideoLowBandW VARCHAR(255), VideoLowRes VARCHAR(255), VideoStdRes VARCHAR(255))"
+    cur.execute(queryCreateTable)
+    
     LikesCount=CommentsCount=0
     LikesUser=Link=Comments=CaptionText=Latitude=Longitude=Created_time=Username=ProfilePicture=FullName=Type=ImageLowRes=ImageThumbnail=''
     ImageStdRes=VideoLowRes=VideoStdRes=VideoLowBandW=''
     row_count = 0
     counter = 0
     counterLimit = count
+    
     while(counter<counterLimit):
         result = getJsonResults(url)
         fileToWrite = open(tag+str(counter/20+1)+'.txt','w')
@@ -117,7 +132,6 @@ def crawlInstagram(tag,count):
             for likes in item['likes']['data']:
                 LikesUserArr.append(likes['username'])
             LikesUser=(',').join(LikesUserArr)
-            print "LikesUser: "+LikesUser
 
             CommentsArr=[]
             CommentsCount=item['comments']['count']
@@ -125,10 +139,8 @@ def crawlInstagram(tag,count):
                 x = ""
                 y = com['text']
                 x = str(unicode(y).encode('ascii','ignore').decode('unicode-escape')).replace("'", "''")
-                print 'test replace: ' + x
                 CommentsArr.append(x)
             Comments=('~|').join(CommentsArr)
-            print "Comments: "+Comments
 
             Link=item['link']
             if(item['location']):
@@ -148,19 +160,15 @@ def crawlInstagram(tag,count):
                     c = ""
                     c = str(unicode(item['caption']['text']).encode('ascii','ignore').decode('unicode-escape')).replace("'","''")
                     CaptionText=str(unicode(item['caption']['text']).encode('ascii','ignore').decode('unicode-escape')).replace("'","''")
-                    print "Caption: "+CaptionText
                 except:
                     CaptionText="None"
-                    print "in except"
                 Created_time=item['caption']['created_time']
             else:
                 CaptionText="None"
                 Created_time="None"
             Username=item['user']['username']
-            print Username
             ProfilePicture=item['user']['profile_picture']
             FullName=str(item['user']['full_name'].encode('ascii','ignore').decode('unicode-escape')).replace("'","''")
-            print FullName
             Type=item['type']
             ImageLowRes=item['images']['low_resolution']['url']
             ImageStdRes=item['images']['standard_resolution']['url']
@@ -195,16 +203,16 @@ def crawlInstagram(tag,count):
 	    d18=VideoLowBandW
 	    d19=VideoLowRes
 	    d20=VideoStdRes
-	    
-	    query="INSERT INTO crawleddata(tag,LikesCount,LikesUser,CommentCount,Comments,Link,Longitude,Latitude,CaptionText,CreatedTime,Username,ProfilePicture,\
+
+	    queryInsertData="INSERT INTO instagram.travelcrawleddata(tag,LikesCount,LikesUser,CommentsCount,Comments,Link,Longitude,Latitude,CaptionText,CreatedTime,Username,ProfilePicture,\
 	    FullName,Type,ImageLowRes,ImageStdRes,ImageThumbnail,VideoLowBandW,VideoLowRes,VideoStdRes)\
 	    VALUES('%s','%d','%s','%d','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"%(d1,d2,d3,d4,d5,d6,d7,d8,d9,d10,d11,d12,d13,d14,d15,d16,d17,d18,d19,d20)
-            cur.execute(query)
+            cur.execute(queryInsertData)
 	    db.commit()
 	    row_count=row_count+1
         counter = counter + 20
         url = result['pagination']['next_url']
-        db.close()
+    db.close()
 
 def readMedia(fileName):
     fileToRead = open(fileName)
