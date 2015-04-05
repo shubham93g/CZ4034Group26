@@ -100,27 +100,27 @@ def returnSearchResults():
 
     rsp = None
     query = None
+    server = 'http://localhost:7574/solr/gettingstarted_shard1_replica1/'
     
     if(item=='tag'):
-        query = ''
+        query = server+'select?q=*:*&fq=CaptionText:*'+searchTerm+'*&wt=json'
     elif(item=='caption'):
-        query = ''
+        query = server+'select?q=*:*&fq=CaptionText:*?'+searchTerm+'*?&wt=json'
     elif(item=='username'):
-        query = ''
+        query = server+'select?q=*:*&fq=Username:*'+searchTerm+'*&wt=json'
     elif(item=='comment'):
-        query = ''
+        query = server+'select?q=*:*&fq=Comments:*'+searchTerm+'*&wt=json'
     else:
-        query = 'http://localhost:7574/solr/gettingstarted_shard1_replica1/select?q='+searchTerm+'&wt=json'
+        query = server+'select?q='+searchTerm+'&wt=json'
 
     print query
     
-    try:
-        conn = urlopen(query)
-        rsp = eval( conn.read() )
+    conn = urlopen(query)
+    rsp = eval( conn.read() )
 
-        print "number of matches=", rsp['response']['numFound']
+    print "number of matches=", rsp['response']['numFound']
 
-        return template('''
+    return template('''
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -208,14 +208,6 @@ def returnSearchResults():
 
 
 ''', page_title='Travelogram - Results', rsp=rsp)
-
-    except:
-        print 'Error in connection to solr'
-        redirect('/')
-
-      
-        
-    
 
 @route('/other/<name>')
 def greet(name):

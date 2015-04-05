@@ -106,7 +106,7 @@ def crawlInstagram(tag,count):
     except Warning as warn:
          print 'Warning: %s ' %warn
 
-    queryCreateTable="CREATE TABLE IF NOT EXISTS instagram.travelcrawleddata(Id INT PRIMARY KEY AUTO_INCREMENT, tag VARCHAR(255), LikesCount INT, LikesUser VARCHAR(255), \
+    queryCreateTable="CREATE TABLE IF NOT EXISTS instagram.crawleddata2013(Id INT PRIMARY KEY AUTO_INCREMENT, tag VARCHAR(255), LikesCount INT, LikesUser VARCHAR(255), \
 	    CommentsCount INT, Comments TEXT, Link VARCHAR(255), Longitude VARCHAR(255), Latitude VARCHAR(255), CaptionText TEXT, CreatedTime VARCHAR(10), \
 	    Username VARCHAR(255), ProfilePicture VARCHAR(255), FullName VARCHAR(255), Type VARCHAR(10), ImageLowRes VARCHAR(255), ImageStdRes VARCHAR(255),\
 	    ImageThumbnail VARCHAR(255), VideoLowBandW VARCHAR(255), VideoLowRes VARCHAR(255), VideoStdRes VARCHAR(255))"
@@ -174,12 +174,24 @@ def crawlInstagram(tag,count):
             ImageStdRes=item['images']['standard_resolution']['url']
             ImageThumbnail=item['images']['thumbnail']['url']
             if(Type=='video'):
-                if(item['videos']['low_bandwidth']):
+                if('low_bandwidth' in item['videos']):
+                    VideoLowBandW=item['videos']['low_bandwidth']['url']
+                else:
+                    VideoLowBandW="None"
+                if('low_resolution' in item['videos']):
+                    VideoLowRes=item['videos']['low_resolution']['url']
+                else:
+                    VideoLowRes="None"
+                if('standard_resolution' in item['videos']):
+                    VideoStdRes=item['videos']['standard_resolution']['url']
+                else:
+                    VideoStdRes="None"
+                '''if(item['videos']['low_bandwidth']):
                     VideoLowBandW=item['videos']['low_bandwidth']['url']
                 if(item['videos']['low_resolution']):    
                     VideoLowRes=item['videos']['low_resolution']['url']      
                 if(item['videos']['standard_resolution']):
-                    VideoStdRes=item['videos']['standard_resolution']['url']
+                    VideoStdRes=item['videos']['standard_resolution']['url']'''
             else:
                 VideoLowBandW=VideoLowRes=VideoStdRes="None"
                         
@@ -204,7 +216,7 @@ def crawlInstagram(tag,count):
 	    d19=VideoLowRes
 	    d20=VideoStdRes
 
-	    queryInsertData="INSERT INTO instagram.travelcrawleddata(tag,LikesCount,LikesUser,CommentsCount,Comments,Link,Longitude,Latitude,CaptionText,CreatedTime,Username,ProfilePicture,\
+	    queryInsertData="INSERT INTO instagram.crawleddata2013(tag,LikesCount,LikesUser,CommentsCount,Comments,Link,Longitude,Latitude,CaptionText,CreatedTime,Username,ProfilePicture,\
 	    FullName,Type,ImageLowRes,ImageStdRes,ImageThumbnail,VideoLowBandW,VideoLowRes,VideoStdRes)\
 	    VALUES('%s','%d','%s','%d','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"%(d1,d2,d3,d4,d5,d6,d7,d8,d9,d10,d11,d12,d13,d14,d15,d16,d17,d18,d19,d20)
             cur.execute(queryInsertData)
