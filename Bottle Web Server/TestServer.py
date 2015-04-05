@@ -4,7 +4,6 @@ from urllib2 import *
 @route('/other')
 def hello():
     return static_file('Starter Template for Bootstrap.html', root='./')
-    #return
 
 @route('/')
 def home():
@@ -43,7 +42,7 @@ def home():
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Project name</a>
+          <a class="navbar-brand" href="#">Travelogram</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <!--ul class="nav navbar-nav">
@@ -56,20 +55,14 @@ def home():
 			<div class="form-group">
 				<input type="text" class="form-control" placeholder="Search" name="searchBar">
 			</div>
-			<button type="submit" class="btn btn-default">Submit</button>
+			<select name = "listItem" class="form-control">
+                            <option value="tag">Tag</option>
+                            <option value="caption">Caption</option>
+                            <option value="username">Username</option>
+                            <option value="comment">Comments</option>
+                        </select>
+                        <button type="submit" class="btn btn-default">Submit</button>
 		</form>
-		<ul class="nav navbar-nav navbar-right">
-			<li class="dropdown">
-			<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown <span class="caret"></span></a>
-			<ul class="dropdown-menu" role="menu">
-				<li><a href="#">Action</a></li>
-				<li><a href="#">Another action</a></li>
-				<li><a href="#">Something else here</a></li>
-				<li class="divider"></li>
-				<li><a href="#">Separated link</a></li>
-			</ul>
-			</li>
-		</ul>
 		 
         </div><!--/.nav-collapse -->
       </div>
@@ -100,20 +93,32 @@ def returnSearchResults():
         select?q=*:*&fq=LikesCount:[* 10]&wt=json ---> returns docs with 10 or less likes
         select?q=*:*&fq=LikesCount:[5 *]&fq=LikesCount:[* 10]&wt=json ---> returns docs with more than 5 and less than 10 likes'''
 
-    searchQuery = request.forms.get('searchBar')
-    print searchQuery
+    searchTerm = request.forms.get('searchBar')
+    item =  request.forms.get('listItem')
+    print searchTerm
+    print item
 
     rsp = None
-    try:
-        conn = urlopen('http://localhost:7574/solr/gettingstarted_shard1_replica1/select?q='+searchQuery+'&wt=json')
-        rsp = eval( conn.read() )
-        
-        print "number of matches=", rsp['response']['numFound']
+    query = None
+    
+    if(item=='tag'):
+        query = ''
+    elif(item=='caption'):
+        query = ''
+    elif(item=='username'):
+        query = ''
+    elif(item=='comment'):
+        query = ''
+    else:
+        query = 'http://localhost:7574/solr/gettingstarted_shard1_replica1/select?q='+searchTerm+'&wt=json'
 
-        #print out the name field for each returned document
-        for doc in rsp['response']['docs']:
-            print 'matched data =', doc['CaptionText']
-            print doc['CommentCount']
+    print query
+    
+    try:
+        conn = urlopen(query)
+        rsp = eval( conn.read() )
+
+        print "number of matches=", rsp['response']['numFound']
 
         return template('''
 <!DOCTYPE html>
@@ -149,7 +154,7 @@ def returnSearchResults():
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Project name</a>
+           <a class="navbar-brand" href="#">Travelogram</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <!--ul class="nav navbar-nav">
@@ -162,20 +167,14 @@ def returnSearchResults():
 			<div class="form-group">
 				<input type="text" class="form-control" placeholder="Search" name="searchBar">
 			</div>
-			<button type="submit" class="btn btn-default">Submit</button>
+			<select name = "listItem" class="form-control">
+                            <option value="tag">Tag</option>
+                            <option value="caption">Caption</option>
+                            <option value="username">Username</option>
+                            <option value="comment">Comments</option>
+                        </select>
+                        <button type="submit" class="btn btn-default">Submit</button>
 		</form>
-		<ul class="nav navbar-nav navbar-right">
-			<li class="dropdown">
-			<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown <span class="caret"></span></a>
-			<ul class="dropdown-menu" role="menu">
-				<li><a href="#">Action</a></li>
-				<li><a href="#">Another action</a></li>
-				<li><a href="#">Something else here</a></li>
-				<li class="divider"></li>
-				<li><a href="#">Separated link</a></li>
-			</ul>
-			</li>
-		</ul>
 		 
         </div><!--/.nav-collapse -->
       </div>
