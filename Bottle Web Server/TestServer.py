@@ -7,7 +7,8 @@ def hello():
 
 @route('/')
 def home():
-    
+    #latitude = 0.0
+    #longitude = 0.0
     return template('''
 <!DOCTYPE html>
 <html lang="en">
@@ -28,7 +29,44 @@ def home():
 
 	<!-- Optional theme -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
-	
+    <style>
+      #map-canvas {
+        width: 500px;
+        height: 400px;
+      }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js"></script>
+    <script>
+      function initialize() {
+        var mapCanvas = document.getElementById('map-canvas');
+        var mapOptions = {
+          center: new google.maps.LatLng(44.5403, -78.5463),
+          zoom: 8,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        }
+        var map = new google.maps.Map(mapCanvas, mapOptions)
+
+       google.maps.event.addListener(map, "rightclick", function(event) {
+      var lat = event.latLng.lat();
+      var lng = event.latLng.lng();
+      // populate yor box/field with lat, lng
+      
+      alert("Lat=" + lat + "; Lng=" + lng);
+      });
+      }
+      google.maps.event.addDomListener(window, 'load', initialize);
+
+      function toggleMap(selectedValue){
+        var div = document.getElementById("map-canvas");
+        if(selectedValue=="map"){
+            div.style.display= "block";
+            initialize();
+        }
+        else
+            div.style.display= "none"
+    }
+
+    </script>
   </head>
 
   <body>
@@ -55,11 +93,12 @@ def home():
 			<div class="form-group">
 				<input type="text" class="form-control" placeholder="Search" name="searchBar">
 			</div>
-			<select name = "listItem" class="form-control">
-                            <option value="tag">Tag</option>
+			<select name = "listItem" class="form-control" onChange="toggleMap(this.value)">
+                            <option value="tag" selected>Tag</option>
                             <option value="caption">Caption</option>
                             <option value="username">Username</option>
                             <option value="comment">Comments</option>
+                            <option value="map">Map</option>
                         </select>
                         <button type="submit" class="btn btn-default">Submit</button>
 		</form>
@@ -70,6 +109,7 @@ def home():
 	
 	<p>a</p>
 	<p>a</p>
+	<div id="map-canvas" style="display:none;margin:0 auto;"></div>
 
 	  <!-- Bootstrap core JavaScript
     ================================================== -->
@@ -85,7 +125,7 @@ def home():
 
 @route('/results', method='POST') 
 def returnSearchResults():
-    '''Query fomats:
+    '''Query formats:
         select?q=*:*&fq=FullName:*shi*&wt=json ---> matches any string containing 'shi'
         select?q=*:*&fq=FullName:Ashima&wt=json ---> exactly matches Ashima
         select?q=*:*&fq=LikesCount:[10 *]&wt=json ---> returns docs with 10 or more likes
@@ -141,7 +181,41 @@ def returnSearchResults():
 
 	<!-- Optional theme -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
-	
+    <style>
+      #map-canvas {
+        width: 500px;
+        height: 400px;
+      }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js"></script>
+    <script>
+      function initialize() {
+        var mapCanvas = document.getElementById('map-canvas');
+        var mapOptions = {
+          center: new google.maps.LatLng(44.5403, -78.5463),
+          zoom: 8,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        }
+        var map = new google.maps.Map(mapCanvas, mapOptions)
+        google.maps.event.addListener(map, "rightclick", function(event) {
+      var lat = event.latLng.lat();
+      var lng = event.latLng.lng();
+      // populate yor box/field with lat, lng
+      alert("Lat=" + lat + "; Lng=" + lng);
+        });
+      }
+      google.maps.event.addDomListener(window, 'load', initialize);
+
+      function toggleMap(selectedValue){
+        var div = document.getElementById("map-canvas");
+        if(selectedValue=="map"){
+            div.style.display= "block";
+            initialize();
+        }
+        else
+            div.style.display= "none"
+    }
+    </script>
   </head>
 
   <body>
@@ -155,7 +229,7 @@ def returnSearchResults():
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-           <a class="navbar-brand" href="#">Travelogram</a>
+           <a class="navbar-brand" href="/">Travelogram</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <!--ul class="nav navbar-nav">
@@ -168,11 +242,12 @@ def returnSearchResults():
 			<div class="form-group">
 				<input type="text" class="form-control" placeholder="Search" name="searchBar">
 			</div>
-			<select name = "listItem" class="form-control">
+			<select name = "listItem" class="form-control" onChange="toggleMap(this.value)">
                             <option value="tag">Tag</option>
                             <option value="caption">Caption</option>
                             <option value="username">Username</option>
                             <option value="comment">Comments</option>
+                            <option value="map">Map</option>
                         </select>
                         <button type="submit" class="btn btn-default">Submit</button>
 		</form>
@@ -183,6 +258,8 @@ def returnSearchResults():
 	
 	<p>a</p>
 	<p>a</p>
+
+	<div id="map-canvas" style="display:none;margin:0 auto;"></div>
         % print 'Objects rendered = ',len(rsp['response']['docs'])
 	% for doc in rsp['response']['docs']:
             % comms = []

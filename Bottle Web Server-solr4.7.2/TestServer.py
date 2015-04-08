@@ -7,8 +7,6 @@ def hello():
 
 @route('/')
 def home():
-    #latitude = 0.0
-    #longitude = 0.0
     return template('''
 <!DOCTYPE html>
 <html lang="en">
@@ -47,12 +45,18 @@ def home():
         var map = new google.maps.Map(mapCanvas, mapOptions)
 
        google.maps.event.addListener(map, "rightclick", function(event) {
-      var lat = event.latLng.lat();
-      var lng = event.latLng.lng();
-      // populate yor box/field with lat, lng
+          var lat = event.latLng.lat();
+          document.getElementById("latitude").value = lat;
+          var lon = event.latLng.lng();
+          document.getElementById("longitude").value = lon;
+
+          document.forms["searchForm"].submit();
       
-      alert("Lat=" + lat + "; Lng=" + lng);
-      });
+          // populate yor box/field with lat, lng
+      
+          //alert("Lat=" + document.getElementById("latitude").value + "; Lng=" + document.getElementById("longitude").value);
+
+          });
       }
       google.maps.event.addDomListener(window, 'load', initialize);
 
@@ -89,7 +93,9 @@ def home():
             <li><a href="#contact">Contact</a></li>
           </ul-->
 		 
-		 <form class="navbar-form navbar-left" role="search" action="/results" method="post">
+		 <form class="navbar-form navbar-left" id="searchForm" role="search" action="/results" method="post">
+                         <input type="hidden" name="latitude" id="latitude" value="1000.0">
+                         <input type="hidden" name="longitude" id="longitude" value="1000.0">
 			<div class="form-group">
 				<input type="text" class="form-control" placeholder="Search" name="searchBar">
 			</div>
@@ -135,8 +141,11 @@ def returnSearchResults():
 
     searchTerm = request.forms.get('searchBar')
     item =  request.forms.get('listItem')
+    latitude = request.forms.get('latitude')
+    longitude = request.forms.get('longitude')
     print searchTerm
     print item
+    print latitude,',',longitude #note: lat,long = 1000.0,1000.0 by default
 
     rsp = None
     query = None
@@ -150,8 +159,14 @@ def returnSearchResults():
         query = server+'select?q=*:*&fq=Username:*'+searchTerm+'*&wt=json'
     elif(item=='comment'):
         query = server+'select?q=*:*&fq=Comments:*'+searchTerm+'*&wt=json'
-    else:
+    elif(item=='map'):
+        if(len(searchTerm)>=1): #note: search term can be empty in other case 
+            query = server +''+searchTerm+''
+        else:
+            query = server + ''
+    else: #never gets executed for now
         query = server+'select?q='+searchTerm+'&wt=json'
+
     query+='&sort=Score%20desc'
     print query
     
@@ -198,11 +213,18 @@ def returnSearchResults():
         }
         var map = new google.maps.Map(mapCanvas, mapOptions)
         google.maps.event.addListener(map, "rightclick", function(event) {
-      var lat = event.latLng.lat();
-      var lng = event.latLng.lng();
-      // populate yor box/field with lat, lng
-      alert("Lat=" + lat + "; Lng=" + lng);
-        });
+          var lat = event.latLng.lat();
+          document.getElementById("latitude").value = lat;
+          var lon = event.latLng.lng();
+          document.getElementById("longitude").value = lon;
+
+          document.forms["searchForm"].submit();
+      
+          // populate yor box/field with lat, lng
+      
+          //alert("Lat=" + document.getElementById("latitude").value + "; Lng=" + document.getElementById("longitude").value);
+
+          });
       }
       google.maps.event.addDomListener(window, 'load', initialize);
 
@@ -238,7 +260,9 @@ def returnSearchResults():
             <li><a href="#contact">Contact</a></li>
           </ul-->
 		 
-		 <form class="navbar-form navbar-left" role="search" action="/results" method="post">
+		 <form class="navbar-form navbar-left" id="searchForm" role="search" action="/results" method="post">
+                         <input type="hidden" name="latitude" id="latitude" value="1000.0">
+                         <input type="hidden" name="longitude" id="longitude" value="1000.0">
 			<div class="form-group">
 				<input type="text" class="form-control" placeholder="Search" name="searchBar">
 			</div>
