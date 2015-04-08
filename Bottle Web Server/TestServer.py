@@ -118,7 +118,8 @@ def returnSearchResults():
     conn = urlopen(query)
     rsp = eval( conn.read() )
 
-    print "number of matches=", rsp['response']['numFound']
+    print "Number of matches=", rsp['response']['numFound']
+    print 'Objects returned = ',len(rsp['response']['docs'])
 
     return template('''
 <!DOCTYPE html>
@@ -182,10 +183,10 @@ def returnSearchResults():
 	
 	<p>a</p>
 	<p>a</p>
-
+        % print 'Objects rendered = ',len(rsp['response']['docs'])
 	% for doc in rsp['response']['docs']:
             % comms = []
-            % if doc['CommentCount'][0] > 0:
+            % if 'Comments' in doc:
                 % comms = doc['Comments'][0].split('~|')
             % end
             % if doc['Type'][0] == 'image':
@@ -207,10 +208,10 @@ def returnSearchResults():
 </html>
 
 
-''', page_title='Travelogram - Results', rsp=rsp)
+''', page_title='Travelogram - '+ searchTerm, rsp=rsp)
 
 @route('/other/<name>')
 def greet(name):
     return template('Hello <b>{{your_name}}</b>, how are you?', your_name=name)
 
-run(host='localhost', port=8080, debug=True)
+run(host='0.0.0.0', port=8080, debug=True)

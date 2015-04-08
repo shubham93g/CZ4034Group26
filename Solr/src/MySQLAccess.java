@@ -35,7 +35,7 @@ public class MySQLAccess {
       statement = connect.createStatement();
       
       //resultSet gets the result of the SQL query
-      resultSet = statement.executeQuery("select * from crawleddata");
+      resultSet = statement.executeQuery("select * from crawleddata2013");
       
       //return the resultSet obtained
       return resultSet;

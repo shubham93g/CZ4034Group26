@@ -93,7 +93,7 @@ def crawlInstagram(tag,count):
     url = 'https://api.instagram.com/v1/tags/' + str(tag) + '/media/recent?client_id=2635546e823342c7a76f083db94a8555'
     #Connect to  sql database
     try:
-	db = MySQLdb.connect(charset='utf8',host="localhost", user="root",passwd="admin") 
+        db = MySQLdb.connect(charset='utf8',host="localhost", user="root",passwd="") 
     except Exception as e:
 	print e
   
@@ -106,7 +106,7 @@ def crawlInstagram(tag,count):
     except Warning as warn:
          print 'Warning: %s ' %warn
 
-    queryCreateTable="CREATE TABLE IF NOT EXISTS instagram.crawleddata2013(Id INT PRIMARY KEY AUTO_INCREMENT, tag VARCHAR(255), LikesCount INT, LikesUser VARCHAR(255), \
+    queryCreateTable="CREATE TABLE IF NOT EXISTS instagram.traveldata(Id INT PRIMARY KEY AUTO_INCREMENT, tag VARCHAR(255), LikesCount INT, LikesUser VARCHAR(255), \
 	    CommentsCount INT, Comments TEXT, Link VARCHAR(255), Longitude VARCHAR(255), Latitude VARCHAR(255), CaptionText TEXT, CreatedTime VARCHAR(10), \
 	    Username VARCHAR(255), ProfilePicture VARCHAR(255), FullName VARCHAR(255), Type VARCHAR(10), ImageLowRes VARCHAR(255), ImageStdRes VARCHAR(255),\
 	    ImageThumbnail VARCHAR(255), VideoLowBandW VARCHAR(255), VideoLowRes VARCHAR(255), VideoStdRes VARCHAR(255))"
@@ -165,7 +165,7 @@ def crawlInstagram(tag,count):
                 Created_time=item['caption']['created_time']
             else:
                 CaptionText="None"
-                Created_time="None"
+                Created_time='0'
             Username=item['user']['username']
             ProfilePicture=item['user']['profile_picture']
             FullName=str(item['user']['full_name'].encode('ascii','ignore').decode('unicode-escape')).replace("'","''")
@@ -216,7 +216,7 @@ def crawlInstagram(tag,count):
 	    d19=VideoLowRes
 	    d20=VideoStdRes
 
-	    queryInsertData="INSERT INTO instagram.crawleddata2013(tag,LikesCount,LikesUser,CommentsCount,Comments,Link,Longitude,Latitude,CaptionText,CreatedTime,Username,ProfilePicture,\
+	    queryInsertData="INSERT INTO instagram.traveldata(tag,LikesCount,LikesUser,CommentsCount,Comments,Link,Longitude,Latitude,CaptionText,CreatedTime,Username,ProfilePicture,\
 	    FullName,Type,ImageLowRes,ImageStdRes,ImageThumbnail,VideoLowBandW,VideoLowRes,VideoStdRes)\
 	    VALUES('%s','%d','%s','%d','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"%(d1,d2,d3,d4,d5,d6,d7,d8,d9,d10,d11,d12,d13,d14,d15,d16,d17,d18,d19,d20)
             cur.execute(queryInsertData)
