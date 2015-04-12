@@ -3,7 +3,7 @@ README
 ************Detailed instructions to execute crawling:*********************
 1. Set up database using MySql in XAMPP(host='localhost',user='root',passwd='').
 2. Name the database 'instagram'	
-3. As long there is an internet connection and Instagram is up and working, run (path and filename) to crawl. Key in the tag and the number of records to be crawled in the simple Tkinter UI.
+3. As long there is an internet connection and Instagram is up and working, run CrawlerUI.py(Crawling folder) to crawl. Key in the tag and the number of records to be crawled in the simple Tkinter UI.
 4. Note that if the MySql hostname, user or password is not the same as mentioned in point 1 above, JsonCrawlerWithSQL.py file needs to be updated with the correct hostname, user and password.
 5. A table 'traveldata' is created using the structure mentioned in crawling documentation with 'id' made the primary key. This table is necessary to temporarily store crawled data. The crawler will crawl Instagram api and store results in the table.
 6.	Warnings are displayed if the database and/or table already exists. These can be safely ignored. Errors might be displayed during the crawling process. This is caught in the exception, this might be due to duplicate images or if the text contains non-ascii characters. This data is skipped and not stored.
